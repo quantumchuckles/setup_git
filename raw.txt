@@ -38,7 +38,8 @@
     ssh-keyscan github.com >> ~/.ssh/known_hosts
 # Test SSH connection to GitHub
     ssh -T git@github.com
-    
+
+
 # Part 3: Git Global Configuration and GPG Signing
 # Set global Git user name and email
     git config --global user.name "your_email@example.com"
@@ -51,7 +52,6 @@
     git config --global gpg.format ssh
 # Set the SSH public key for signing
     git config --global user.signingkey ~/.ssh/id_ed25519.pub
-
 # Add the signing key to GPG's allowed signers list
     echo "$(git config --get user.email) namespaces=\"git\" $(cat ~/.ssh/id_ed25519.pub)" >> ~/.gnupg/allowed_signers
 # Set the allowed signers file for GPG
