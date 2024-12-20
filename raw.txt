@@ -1,0 +1,58 @@
+# Part 1: Cleanup
+# List the contents of the SSH directory
+    ls -l ~/.ssh
+# Remove existing SSH keys and configuration
+    rm -rf ~/.ssh
+# Create a new SSH directory
+    mkdir ~/.ssh
+# Set permissions for the SSH directory to 700 (read/write/execute for owner)
+    chmod 700 ~/.ssh
+# List SSH keys currently added to the SSH agent
+    ssh-add -l
+# Remove all SSH keys from the agent
+    ssh-add -D
+# Remove the GPG configuration directory
+    rm -rf ~/.gnupg
+# List global git configuration settings
+    git config --global --list
+# Remove the existing global git configuration file
+    rm -rf ~/.gitconfig
+# Create an empty git configuration file
+    touch ~/.gitconfig
+
+
+# Part 2: SSH Key Generation and Setup
+# Generate a new SSH key pair with ED25519 algorithm
+    ssh-keygen -t ed25519 -C "your_email@example.com"
+# Start the SSH agent
+    eval "$(ssh-agent -s)"
+# Add the generated SSH private key to the agent
+    ssh-add ~/.ssh/id_ed25519
+# Output the public key to copy for GitHub
+    cat ~/.ssh/id_ed25519.pub 	
+# Log in to GitHub, go to Settings > SSH and GPG keys, then add the public key.
+# Make 2 keys: one for authentication and another for signing, using the same public key for both and give them the same title.
+# Edit SSH configuration for GitHub
+    echo -e "Host github.com\n    HostName github.com\n    User git\n    IdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
+# Adding GitHub's SSH key to known_hosts...
+    ssh-keyscan github.com >> ~/.ssh/known_hosts
+# Test SSH connection to GitHub
+    ssh -T git@github.com
+    
+# Part 3: Git Global Configuration and GPG Signing
+# Set global Git user name and email
+    git config --global user.name "your_email@example.com"
+    git config --global user.email "your_username"
+# Enable GPG signing for commits
+    git config --global commit.gpgSign true
+# Enable GPG signing for tags
+    git config --global tag.gpgSign true
+# Set GPG format to SSH
+    git config --global gpg.format ssh
+# Set the SSH public key for signing
+    git config --global user.signingkey ~/.ssh/id_ed25519.pub
+
+# Add the signing key to GPG's allowed signers list
+    echo "$(git config --get user.email) namespaces=\"git\" $(cat ~/.ssh/id_ed25519.pub)" >> ~/.gnupg/allowed_signers
+# Set the allowed signers file for GPG
+    git config --global gpg.ssh.allowedSignersFile ~/.gnupg/allowed_signers
